@@ -1,8 +1,8 @@
-""" Implementation of the `MutableMapping` abstract base class that provides an 
+"""Implementation of the `MutableMapping` abstract base class that provides an
     interface with the parameters of a ROS2 node.
 
-A [mapping] is a dict-like data structure that pairs keys with values. For more 
-information about the MutableMapping class, see the documentation for the 
+A [mapping] is a dict-like data structure that pairs keys with values. For more
+information about the MutableMapping class, see the documentation for the
 [collections.abc] package.
 
 Example
@@ -33,7 +33,7 @@ True
 Initialize several ROS2 parameters.
 
 >>> parameter_map = dict(one=1, two=2.0, three='three')
->>> parameters = [node.declare_parameter(k, v) 
+>>> parameters = [node.declare_parameter(k, v)
 ...               for (k, v) in parameter_map.items()]
 
 Test parameter access.
@@ -131,42 +131,40 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
-
 
 # Import abstract base classes.
 import collections.abc
 
+import rclpy.exceptions
+
 # ROS2 imports.
 import rclpy.parameter
-import rclpy.exceptions
 from rcl_interfaces.msg import SetParametersResult
-from rclpy.exceptions import ParameterNotDeclaredException
-from rclpy.exceptions import ParameterImmutableException
+from rclpy.exceptions import ParameterImmutableException, ParameterNotDeclaredException
 
 # Local imports.
 from ros_parameter_collections.mapping import Mapping
 
-
 # Establish a mapping between rclpy paramter types and builtin types.
 parameter_type = rclpy.parameter.Parameter.Type
-type_cast_map \
-  = {parameter_type.NOT_SET:       lambda v: None,
-     parameter_type.BOOL:          bool, 
-     parameter_type.INTEGER:       int,
-     parameter_type.DOUBLE:        float,
-     parameter_type.STRING:        str,
-     parameter_type.BOOL_ARRAY:    lambda v: [bool(vi) for vi in v],
-     parameter_type.INTEGER_ARRAY: lambda v: [int(vi) for vi in v],
-     parameter_type.DOUBLE_ARRAY:  lambda v: [float(vi) for vi in v],
-     parameter_type.STRING_ARRAY:  lambda v: [str(vi) for vi in v],
-     parameter_type.BYTE_ARRAY:    lambda v: v,
-    }
+type_cast_map = {
+    parameter_type.NOT_SET: lambda v: None,
+    parameter_type.BOOL: bool,
+    parameter_type.INTEGER: int,
+    parameter_type.DOUBLE: float,
+    parameter_type.STRING: str,
+    parameter_type.BOOL_ARRAY: lambda v: [bool(vi) for vi in v],
+    parameter_type.INTEGER_ARRAY: lambda v: [int(vi) for vi in v],
+    parameter_type.DOUBLE_ARRAY: lambda v: [float(vi) for vi in v],
+    parameter_type.STRING_ARRAY: lambda v: [str(vi) for vi in v],
+    parameter_type.BYTE_ARRAY: lambda v: v,
+}
 """ Mapping for performing builtin type casts on rclpy Parameter data types.
 
 This is necessary because the rclpy Parameter class does not implicitly cast 
@@ -183,27 +181,28 @@ Type 'Type.DOUBLE' and value '42' do not agree
 >>> p = Parameter(name='test', type_=type_, value=type_cast_map[type_](value))
 """
 
+
 # Implement the mapping class.
 class MutableMapping(Mapping, collections.abc.MutableMapping):
-    """ Implementation of `mappings.abc.MutableMapping` as an interface to the 
+    """Implementation of `mappings.abc.MutableMapping` as an interface to the
         parameters of a ROS2 node.
-    
+
     Attributes
     ----------
     node : rclpy.node.Node
         ROS2 node that this mapping interface will wrap.
     """
-    
+
     def __setitem__(self, key, value):
-        """ Access a ROS2 parameter by key, and set a new value.
-        
+        """Access a ROS2 parameter by key, and set a new value.
+
         Parameters
         ----------
         key : str
             A ROS2 parameter key / name.
         value
             A valid parameter value to be associated with the provided key.
-            
+
         Raises
         ------
         TypeError
@@ -211,41 +210,44 @@ class MutableMapping(Mapping, collections.abc.MutableMapping):
         Exception
             If the parameter cannot be set.
         """
-        
+
         # Verify that the key is a string.
-        if not isinstance(key, str): raise TypeError('Key must be a string')
-        
-        # Determine the parameter type. Undeclare the existing parameter, if 
+        if not isinstance(key, str):
+            raise TypeError("Key must be a string")
+
+        # Determine the parameter type. Undeclare the existing parameter, if
         # new type does not match the old.
         type_ = rclpy.parameter.Parameter.Type.from_parameter_value(value)
         if self.node.has_parameter(key):
             if self.node.get_parameter(key).type_ != type_:
                 self.node.undeclare_parameter(key)
-        
+
         # Initialize the parameter object for assignment.
-        # This is slightly complicated due to lack of implicit casting by the 
+        # This is slightly complicated due to lack of implicit casting by the
         # rclpy Parameter class.
         kwargs = dict(name=key, type_=type_, value=type_cast_map[type_](value))
         parameter = rclpy.parameter.Parameter(**kwargs)
-        
+
         # Try to set the parameter.
         # Declare the parameter, if it does not already exist.
         # The result is rcl_interfaces.msg.SetParametersResult.
-        try: results = self.node.set_parameters([parameter]) 
+        try:
+            results = self.node.set_parameters([parameter])
         except ParameterNotDeclaredException:
             parameters = [self.node.declare_parameter(key, value)]
             results = [SetParametersResult(successful=True) for p in parameters]
         for result in results:
-            if not result.successful: raise Exception(result.reason)
-        
+            if not result.successful:
+                raise Exception(result.reason)
+
     def __delitem__(self, key):
-        """ Undeclare a ROS2 parameter by key.
-        
+        """Undeclare a ROS2 parameter by key.
+
         Parameters
         ----------
         key : str
             A ROS2 parameter key / name.
-            
+
         Raises
         ------
         TypeError
@@ -255,22 +257,22 @@ class MutableMapping(Mapping, collections.abc.MutableMapping):
         Exception
             If the parameter is immutable.
         """
-        
+
         # Verify that the key is a string.
-        if not isinstance(key, str): raise TypeError('Key must be a string')
-        
+        if not isinstance(key, str):
+            raise TypeError("Key must be a string")
+
         # Try to undeclare the parameter.
-        try: self.node.undeclare_parameter(key)
-        except ParameterNotDeclaredException as e: raise KeyError(*e.args)
-        except ParameterImmutableException as e: 
-            raise Exception('Immutable parameter')
-    
-  
+        try:
+            self.node.undeclare_parameter(key)
+        except ParameterNotDeclaredException as e:
+            raise KeyError(*e.args)
+        except ParameterImmutableException:
+            raise Exception("Immutable parameter")
+
 
 # Main.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    
-  
 
+    doctest.testmod()

@@ -1,8 +1,8 @@
-""" Implementation of the `Collection` abstract base class that provides an 
+"""Implementation of the `Collection` abstract base class that provides an
     interface with the parameters of a ROS2 node.
 
-Any implementation of the `Collection` class must define the [__contains__], 
-[__iter__], and [__len__] methods. For more information about the 
+Any implementation of the `Collection` class must define the [__contains__],
+[__iter__], and [__len__] methods. For more information about the
 Collection class, see the documentation for the [collections.abc] package.
 
 Example
@@ -33,7 +33,7 @@ True
 Initialize several ROS2 parameters.
 
 >>> parameter_map = dict(one=1, two=2.0, three='three')
->>> parameters = [node.declare_parameter(k, v) 
+>>> parameters = [node.declare_parameter(k, v)
 ...               for (k, v) in parameter_map.items()]
 
 Verify that the length is three.
@@ -93,13 +93,12 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
-
 
 # Import abstract base classes.
 import collections.abc
@@ -112,23 +111,20 @@ from ros_parameter_collections.sized import Sized
 
 # Implement the collection class.
 class Collection(Container, Iterable, Sized, collections.abc.Collection):
-    """ Implementation of `collections.abc.Collection` as an interface to the 
+    """Implementation of `collections.abc.Collection` as an interface to the
         parameters of a ROS2 node.
-    
+
     Attributes
     ----------
     node : rclpy.node.Node
         ROS2 node that this collection interface will wrap.
     """
-    
+
     pass
-    
-  
+
 
 # Main.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    
-  
 
+    doctest.testmod()

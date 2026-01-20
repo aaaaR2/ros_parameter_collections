@@ -1,13 +1,13 @@
-""" A [ROS2 package] that provides an interface for treating [ROS2 parameters] 
-    (and parameter groups) like standard Python container data types (e.g., 
+"""A [ROS2 package] that provides an interface for treating [ROS2 parameters]
+    (and parameter groups) like standard Python container data types (e.g.,
     `dict`, `list`, `set`, and `tuple`).
 
-For more information about Python containers, see the documentation for 
-[emulating container types], as well as the documentation for the 
-[collections package]. The [table of collection types] in the `collections.abc` 
+For more information about Python containers, see the documentation for
+[emulating container types], as well as the documentation for the
+[collections package]. The [table of collection types] in the `collections.abc`
 documentation can be especially informative.
 
-For more information about working with ROS2 parameters, see the 
+For more information about working with ROS2 parameters, see the
 [Understanding parameters tutorial].
 
 References
@@ -18,7 +18,7 @@ References
 [ROS2 parameters]: https://docs.ros.org/en/humble/Concepts/About-ROS-2-Parameters.html
 
 [table of collection types]: https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes
-       
+
 [collections.abc]: https://docs.python.org/3/library/collections.abc.html
 
 [collections package]: https://docs.python.org/3/library/collections.html
@@ -32,17 +32,16 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
 
+from .collection import Collection
 from .container import Container
 from .iterable import Iterable
-from .sized import Sized
-from .collection import Collection
 from .mapping import Mapping
 from .mutable_mapping import MutableMapping
-
+from .sized import Sized

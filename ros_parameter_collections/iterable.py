@@ -1,12 +1,12 @@
-""" Implementation of the `Iterable` abstract base class that provides an 
+"""Implementation of the `Iterable` abstract base class that provides an
     interface with the parameters of a ROS2 node.
 
-Any implementation of the `Iterable` class must define the [__iter__] 
-method, which is used in the construction of [Python iterators], which support 
-the [Python iterator protocol]. For more information about the Iterable class, 
+Any implementation of the `Iterable` class must define the [__iter__]
+method, which is used in the construction of [Python iterators], which support
+the [Python iterator protocol]. For more information about the Iterable class,
 see the documentation for the [collections.abc] package.
 
-Iteration of ROS2 parameters is implemented using the 
+Iteration of ROS2 parameters is implemented using the
 [get_parameters_by_prefix] method of `rclpy.node.Node`.
 
 Example
@@ -32,7 +32,7 @@ Create a container interface to the node parameters.
 Initialize several ROS2 parameters.
 
 >>> parameter_map = dict(one=1, two=2.0, three='three')
->>> parameters = [node.declare_parameter(k, v) 
+>>> parameters = [node.declare_parameter(k, v)
 ...               for (k, v) in parameter_map.items()]
 
 Test the iterator protocol.
@@ -67,13 +67,12 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
-
 
 # Import abstract base classes.
 import collections.abc
@@ -81,42 +80,39 @@ import collections.abc
 
 # Implement the collection class.
 class Iterable(collections.abc.Iterable):
-    """ Implementation of `collections.abc.Iterable` as an interface to the 
+    """Implementation of `collections.abc.Iterable` as an interface to the
         parameters of a ROS2 node.
-    
+
     Attributes
     ----------
     node : rclpy.node.Node
         ROS2 node that this container interface will wrap.
     """
-    
+
     def __iter__(self):
-        """ Return parameter key iterator.
-        
+        """Return parameter key iterator.
+
         Returns
         -------
         parameters_map : dict
-            Since the dict type implements the iterator protocol for the keys 
-            of the mapping, this class effectively implements the same 
+            Since the dict type implements the iterator protocol for the keys
+            of the mapping, this class effectively implements the same
             protocol for the parameters keys / names.
         """
         # An empty string matches all parameters.
-        parameter_map = self.node.get_parameters_by_prefix('')
-        
+        parameter_map = self.node.get_parameters_by_prefix("")
+
         # Exclude the `use_sim_time` parameter.
-        parameter_map = {k: v 
-                         for (k, v) in parameter_map.items() 
-                         if (k not in ['use_sim_time'])}
-        
+        parameter_map = {
+            k: v for (k, v) in parameter_map.items() if (k not in ["use_sim_time"])
+        }
+
         # Return the result.
         return iter(parameter_map)
-    
-  
+
 
 # Main.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    
-  
 
+    doctest.testmod()

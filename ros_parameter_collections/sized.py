@@ -1,11 +1,11 @@
-""" Implementation of the `Sized` abstract base class that provides an 
+"""Implementation of the `Sized` abstract base class that provides an
     interface with the parameters of a ROS2 node.
 
-Any implementation of the `Sized` class must define the [__len__] 
-method, which is used by [Python len] function. For more information about the 
+Any implementation of the `Sized` class must define the [__len__]
+method, which is used by [Python len] function. For more information about the
 Sized class, see the documentation for the [collections.abc] package.
 
-The number of ROS2 parameters is determined using the 
+The number of ROS2 parameters is determined using the
 [get_parameters_by_prefix] method of `rclpy.node.Node`.
 
 Example
@@ -74,13 +74,12 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
-
 
 # Import abstract base classes.
 import collections.abc
@@ -88,40 +87,37 @@ import collections.abc
 
 # Implement the collection class.
 class Sized(collections.abc.Sized):
-    """ Implementation of `collections.abc.Sized` as an interface to the 
+    """Implementation of `collections.abc.Sized` as an interface to the
         parameters of a ROS2 node.
-    
+
     Attributes
     ----------
     node : rclpy.node.Node
         ROS2 node that this container interface will wrap.
     """
-    
+
     def __len__(self):
-        """ Return the number of parameters declared for a ROS2 node.
-        
+        """Return the number of parameters declared for a ROS2 node.
+
         Returns
         -------
         N : int
             The number of declared ROS2 parameters.
         """
         # An empty string matches all parameters.
-        parameter_map = self.node.get_parameters_by_prefix('')
-        
+        parameter_map = self.node.get_parameters_by_prefix("")
+
         # Exclude the `use_sim_time` parameter.
-        parameter_map = {k: v 
-                         for (k, v) in parameter_map.items() 
-                         if (k not in ['use_sim_time'])}
-        
+        parameter_map = {
+            k: v for (k, v) in parameter_map.items() if (k not in ["use_sim_time"])
+        }
+
         # Return the result.
         return len(parameter_map)
-    
-  
+
 
 # Main.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    
-  
 
+    doctest.testmod()

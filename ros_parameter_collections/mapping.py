@@ -1,8 +1,8 @@
-""" Implementation of the `Mapping` abstract base class that provides an 
+"""Implementation of the `Mapping` abstract base class that provides an
     interface with the parameters of a ROS2 node.
 
-A [mapping] is a dict-like data structure that pairs keys with values. For more 
-information about the Mapping class, see the documentation for the 
+A [mapping] is a dict-like data structure that pairs keys with values. For more
+information about the Mapping class, see the documentation for the
 [collections.abc] package.
 
 Example
@@ -33,7 +33,7 @@ True
 Initialize several ROS2 parameters.
 
 >>> parameter_map = dict(one=1, two=2.0, three='three')
->>> parameters = [node.declare_parameter(k, v) 
+>>> parameters = [node.declare_parameter(k, v)
 ...               for (k, v) in parameter_map.items()]
 
 Test parameter access.
@@ -121,13 +121,12 @@ References
 
 
 # Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
-# 
+#
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# 
+#
 # Contact: a.whit (nml@whit.contact)
-
 
 # Import abstract base classes.
 import collections.abc
@@ -141,32 +140,32 @@ from ros_parameter_collections.collection import Collection
 
 # Implement the mapping class.
 class Mapping(Collection, collections.abc.Mapping):
-    """ Implementation of `mappings.abc.Mapping` as an interface to the 
+    """Implementation of `mappings.abc.Mapping` as an interface to the
         parameters of a ROS2 node.
-    
+
     Attributes
     ----------
     node : rclpy.node.Node
         ROS2 node that this mapping interface will wrap.
     """
-    
+
     def __getitem__(self, key):
-        """ Access a ROS2 parameter by key.
-        
+        """Access a ROS2 parameter by key.
+
         ```{todo}
         Support for hierarchical parameter keys via get_parameters_by_prefix.
         ```
-        
+
         Parameters
         ----------
         key : str
             A ROS2 parameter key / name.
-        
+
         Returns
         -------
         value
             Value of the parameter associated with the provided key.
-        
+
         Raises
         ------
         TypeError
@@ -174,25 +173,24 @@ class Mapping(Collection, collections.abc.Mapping):
         KeyError
             If no parameter is associated with the provided key.
         """
-        
+
         # Verify that the key is a string.
-        if not isinstance(key, str): raise TypeError('Key must be a string')
-        
+        if not isinstance(key, str):
+            raise TypeError("Key must be a string")
+
         # Try to retrieve the parameter.
         # Catch get_parameter 'not declared' exception.
-        try: value = self.node.get_parameter(key).value
-        except ParameterNotDeclaredException as e: raise KeyError(*e.args)
-        
+        try:
+            value = self.node.get_parameter(key).value
+        except ParameterNotDeclaredException as e:
+            raise KeyError(*e.args)
+
         # Return the result.
         return value
-        
-    
-  
+
 
 # Main.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    
-  
 
+    doctest.testmod()
